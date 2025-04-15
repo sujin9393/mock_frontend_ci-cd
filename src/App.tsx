@@ -64,8 +64,8 @@ function App() {
         <h1>React + Spring Boot 연결 테스트</h1>
         <p>{message}</p>
       </div>
-      <input value={name} onChange={(e) => setName(e.target.value)} />
-      <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input name="username" value={name} onChange={(e) => setName(e.target.value)} />
+      <input name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <button onClick={handlePost}>POST 요청</button>
       <p>{postResult}</p>
 
