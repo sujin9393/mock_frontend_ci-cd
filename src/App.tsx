@@ -64,15 +64,15 @@ function App() {
         <h1>React + Spring Boot 연결 테스트</h1>
         <p>{message}</p>
       </div>
-      <input name="username" value={name} onChange={(e) => setName(e.target.value)} />
-      <input name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input type="text" name="username" value={name} onChange={(e) => setName(e.target.value)} />
+      <input type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <button onClick={handlePost}>POST 요청</button>
       <p>{postResult}</p>
 
       <div style={{marginTop: "20px"}}>
         <h2>등록된 사용자 목록</h2>
         <ul>
-          {users.map((user, idx) => (
+          {(Array.isArray(users) ? users : []).map((user, idx) => (
             <li key={idx}>
               이름: {user.name}, 이메일: {user.email}
             </li>
