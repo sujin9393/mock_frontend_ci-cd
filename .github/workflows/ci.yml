@@ -1,4 +1,4 @@
-name: Frontend CI
+name: Frontend CI/CD
 
 on:
   push:
@@ -7,14 +7,14 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: 레포지토리 체크아웃
         uses: actions/checkout@v3
 
-      - name: Node.js 18 설정
+      - name: ⚙️ Node.js 18 설정
         uses: actions/setup-node@v3
         with:
           node-version: '18'
@@ -25,5 +25,24 @@ jobs:
       - name: 프론트엔드 빌드
         run: npm run build
 
-      - name: 빌드 결과 확인
-        run: ls -al dist
+      - name: dist 폴더 압축
+        run: zip -r dist.zip dist
+
+      - name: SSH 설정
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.FRONTEND_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.FRONTEND_HOST }} >> ~/.ssh/known_hosts
+
+      - name: GCP 서버에 배포 파일 전송
+        run: scp dist.zip ${{ secrets.FRONTEND_HOST }}:~/dist.zip
+
+      - name: GCP 서버에서 배포 수행
+        run: |
+          ssh ${{ secrets.FRONTEND_HOST }} << 'EOF'
+            rm -rf ~/frontend/dist
+            unzip -o ~/dist.zip -d ~/frontend
+            rm ~/dist.zip
+            echo "✅ 배포 완료!"
+          EOF
